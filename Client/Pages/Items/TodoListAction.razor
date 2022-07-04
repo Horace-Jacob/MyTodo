@@ -1,0 +1,54 @@
+@inject HttpClient HttpClient
+@using BlazorApp.Shared.Models
+@using BlazorApp.Client.Components
+@inject NavigationManager NavigationManager
+
+<div>
+<td>
+        <a @onclick="OkEdit" class="btn btn-outline-dark" role="button">
+            Edit
+        </a>
+        <a href='/deletetodo/@todo.TodoId' class="btn btn-outline-danger" role="button">
+            Delete
+        </a>
+        <a @onclick="showDetails" class="btn btn-outline-danger" role="button">
+            Details
+        </a>
+</td>
+</div>
+<div>
+    @* <p hidden="@isShow">I am Blazor</p> *@
+    @* < hidden="@isShow"> *@
+    <TodoDetailsItem id="@todo.TodoId" ShowDetailsOrNot="@isShow" todoDetails="todoDetails" />
+</div>
+
+
+
+@code
+{
+    [Parameter]
+    public Todo todo {get; set;}
+
+    [Parameter]
+    public EventCallback<Todo> OpenModalDialog {get; set;}
+
+    protected List<TodoDetails> todoDetails {get; set;}
+
+    private async Task OkEdit()
+    {
+        await OpenModalDialog.InvokeAsync(todo);
+    }
+
+    private bool isShow {get; set;} = false;
+
+    private async Task showDetails(){
+        isShow = !isShow;
+        await GetTodoDetails();
+    }
+
+    protected async Task GetTodoDetails(){
+        todoDetails = await HttpClient.GetFromJsonAsync<List<TodoDetails>>("https://localhost:7047/details/" + Convert.ToInt32(todo.TodoId));
+    }
+
+    
+}

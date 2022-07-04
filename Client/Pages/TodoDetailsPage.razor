@@ -1,0 +1,54 @@
+@page "/tododetails/{id:int}"
+@inject HttpClient HttpClient
+@using BlazorApp.Shared.Models
+@using BlazorApp.Client.Pages.Items
+
+<h1>Todo Details</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <a href='/addtododetails/@id/adddetails' class="btn btn-primary" role="button">
+            <i class="fas fa-user-plus"></i>
+            Add Todo Details
+        </a>
+    </div>
+</div>
+
+@if(@todoDetails != null)
+{
+    @foreach (var todoDetail in todoDetails)
+{
+    <ul>
+        <li>@todoDetail.detail</li>
+    </ul>
+}
+}
+else{
+    <p>Nothing here!</p>
+}
+
+@code
+{
+    [Parameter]
+	public int id { get; set; }
+    protected List<TodoDetails> todoDetails = new();
+
+    protected bool OpenModal {get; set;}
+
+    protected override async Task OnInitializedAsync()
+	{
+        await GetTodoDetails();
+	}
+
+    protected async Task GetTodoDetails()
+    {   
+		todoDetails = await HttpClient.GetFromJsonAsync<List<TodoDetails>>("https://localhost:7047/details/" + Convert.ToInt32(id));
+    }
+
+    protected async Task ShowTodoDetails(int id)
+	{
+		OpenModal = true;
+		todoDetails = await HttpClient.GetFromJsonAsync<List<TodoDetails>>("https://localhost:7047/details/" + Convert.ToInt32(id));
+		StateHasChanged();
+	}
+}

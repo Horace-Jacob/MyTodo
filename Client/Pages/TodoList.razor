@@ -1,0 +1,113 @@
+﻿@page "/todolist"
+@using BlazorApp.Shared.Models
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@using BlazorApp.Client.Components
+@using System.Text.Json;
+@using BlazorApp.Client.Pages.Items
+
+<h3>My Todo</h3>
+
+<div class="row">
+    <div class="col-md-6">
+        <a href='/addtodo' class="btn btn-primary" role="button">
+            <i class="fas fa-user-plus"></i>
+            Add User
+        </a>
+    </div>
+    
+</div>
+<br />
+
+@* <table class="table table-striped align-middle table-bordered">
+        <thead class="table-success">
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+				<th>Actions</th>
+            </tr>
+        </thead>
+		<tbody>
+			@foreach(var todo in todoList)
+			{
+				<tr>
+					<td>@todo.TodoId</td>
+					<td>@todo.Title</td>
+					<td>
+                        <a @onclick="() => OpenModalDialog(todo.TodoId)" class="btn btn-outline-dark" role="button">
+                            Edit
+                        </a>
+                        <a href='/deletetodo/@todo.TodoId' class="btn btn-outline-danger" role="button">
+                            Delete
+                        </a>
+                    </td>
+				</tr>
+			}
+		</tbody>
+</table> *@
+
+<TodoListTable todoList="todoList" />
+
+
+<Pagination TotalPages="totalPages" CurrentPage="currentPage" Radius="2" SelectedPage="SelectedPage" />
+
+
+@* @if(OpenModal)
+{
+	<ModalDialog todo="@todo" OnClose="@EditTodo" DialogType="ModalDialog.ModalDialogType.EditCancel" />
+	
+} *@
+
+@code {
+	protected bool OpenModal { get; set; }
+	protected List<Todo> todoList = new();
+	@* protected Todo todo = new(); *@
+
+	private int totalPages;
+	private int currentPage = 1;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await GetTodos();
+	}
+	//https://localhost:7047/todos=1&pageSize=5
+	private async Task SelectedPage(int page)
+	{
+		currentPage = page;
+		await GetTodos(page);
+	}
+
+	protected async Task GetTodos(int page = 1, int pageSize = 5)
+	{
+		var httpResponse = await HttpClient.GetAsync(NavigationManager.BaseUri + $"todos?page={page}&pageSize={pageSize}");
+		if(httpResponse.IsSuccessStatusCode)
+		{
+			totalPages = int.Parse(httpResponse.Headers.GetValues("pagesQuantity").FirstOrDefault());
+			var responseString = await httpResponse.Content.ReadAsStringAsync();
+			todoList = JsonSerializer.Deserialize<List<Todo>>(responseString, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+		}
+		else
+		{
+			
+		}
+
+	}
+
+	@* protected async Task S(int id)
+	{
+		OpenModal = true;
+		todo = await HttpClient.GetFromJsonAsync<Todo>("https://localhost:7047/todos/" + id);
+		StateHasChanged();
+	} *@
+
+
+	@* protected async Task EditTodo()
+	{
+		await HttpClient.PutAsJsonAsync(NavigationManager.BaseUri + "todos", todo);
+		OpenModal = false;
+		await GetTodos();
+		StateHasChanged();
+	} *@
+
+	
+}

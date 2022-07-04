@@ -1,0 +1,41 @@
+@using BlazorApp.Shared.Models
+@inject HttpClient HttpClient
+
+@if(ShowDetailsOrNot){
+<div class="row">
+    <div class="col-md-6">
+        <a href='/addtododetails/@id/adddetails' class="btn btn-primary" role="button">
+            <i class="fas fa-user-plus"></i>
+            Add Todo Details
+        </a>
+    </div>
+</div>
+
+@if(@todoDetails != null)
+{
+    @foreach (var todoDetail in todoDetails)
+{
+    <ul>
+        <li>@todoDetail.detail</li>
+    </ul>
+}
+}
+else{
+    <p>Nothing here!</p>
+}
+}
+
+
+
+@code
+{
+    [Parameter]
+	public int id { get; set; }
+    
+    [Parameter]
+    public List<TodoDetails> todoDetails {get; set;}
+    
+    [Parameter]
+    public bool ShowDetailsOrNot {get; set;}
+
+}

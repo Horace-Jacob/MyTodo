@@ -1,0 +1,29 @@
+@page "/test"
+@implements IDisposable
+@inject StateContainer StateContainer
+
+<p>Counter Value: <b>@StateContainer.Property</b></p>
+
+<p>
+    <button @onclick="ChangePropertyValue">
+        Click
+    </button>
+</p>
+
+@code {
+    private int counter = 0;
+    protected override void OnInitialized()
+    {
+        StateContainer.OnChange += StateHasChanged;
+    }
+
+    private void ChangePropertyValue()
+    {
+            StateContainer.Property = $"{counter++}";
+    }
+
+    public void Dispose()
+    {
+        StateContainer.OnChange -= StateHasChanged;
+    }
+}

@@ -1,0 +1,39 @@
+@page "/addtododetails/{id:int}/adddetails"
+@using BlazorApp.Shared.Models
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<h1>Add Todo Details</h1>
+
+<EditForm Model="@todoDetails" OnValidSubmit="CreateTodo">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label for="Title" class="form-label">Title</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="todoDetails.detail" />
+        </div>
+        <ValidationMessage For="@(() => todoDetails.detail)" />
+    </div>
+    
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button class="btn btn-light" @onclick="Cancel">Cancel</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int id {get; set;}
+	protected TodoDetails todoDetails = new();
+	protected async Task CreateTodo()
+	{
+        todoDetails.todoid = id;
+		await HttpClient.PostAsJsonAsync("https://localhost:7047/details", todoDetails);
+		Cancel();
+	}
+
+	protected void Cancel()
+	{
+		NavigationManager.NavigateTo("/todolist");
+	}
+}
