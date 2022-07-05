@@ -48,6 +48,25 @@ namespace BlazorApp.Server.Controllers
             _ITodo.AddTodoDetail(todoDetail);
         }
 
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id){
+            try
+            {
+                List<TodoDetails>? todoDetail = _dbContext.TodoDetail.Where(element => element.todoid == id).ToList();
+                if(todoDetail != null){
+                    _dbContext.TodoDetail.RemoveRange(todoDetail);
+                    _dbContext.SaveChanges();
+                    return Ok();
+                }
+                return NotFound();
+            }
+            catch (System.Exception)
+            {
+                
+                throw;
+            }
+        }
+
 
     }
 }

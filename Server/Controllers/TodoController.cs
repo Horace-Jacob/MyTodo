@@ -13,13 +13,13 @@ namespace BlazorApp.Server.Controllers
     public class TodoController : Controller
     {
         private readonly TodoInterface _ITodo;
-        private readonly IWebHostEnvironment env;
+        // private readonly IWebHostEnvironment env;
         private readonly TodoDatabaseContext _dbContext;
         public TodoController(TodoInterface iTodo, TodoDatabaseContext dbContext)
         {
             _ITodo = iTodo;
             _dbContext = dbContext;
-            this.env = env;
+            // this.env = env;
         }
 
 
@@ -31,11 +31,6 @@ namespace BlazorApp.Server.Controllers
             return await queryable.Paginate(pagination).ToListAsync();
         }
 
-        [HttpPost]
-        public void PostDetails(TodoDetails todoDetail)
-        {
-            _ITodo.AddTodoDetail(todoDetail);
-        }
 
         [HttpGet("{id}")]
         public IActionResult Get(int id)

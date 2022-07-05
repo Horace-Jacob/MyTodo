@@ -29,6 +29,7 @@
 	protected async Task RemoveTodo(int id)
 	{
 		await HttpClient.DeleteAsync("https://localhost:7047/todos/" + id);
+		await HttpClient.DeleteAsync("https://localhost:7047/details/" + id);
 		Cancel();
 	}
 
@@ -37,3 +38,4 @@
 		NavigationManager.NavigateTo("/todolist");
 	}
 }
+	
